@@ -1,0 +1,4 @@
+name: desert-dimension
+version: '1.0'
+main: com.plugin.MainPlugin
+api-version: '1.21'
