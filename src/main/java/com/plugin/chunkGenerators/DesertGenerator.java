@@ -20,7 +20,7 @@ public class DesertGenerator extends ChunkGenerator {
     private static final int BASE_Y = 64;
 
     private static final int SAND_NOISE_AMPLITUDE = 2;
-    private static final float SAND_NOISE_SCALE = 0.005f;
+    private static final float SAND_NOISE_SCALE = 0.015f;
     private static final Material[] SAND_GROUND_MATERIALS = {
             Material.SAND,
             Material.SMOOTH_SANDSTONE,
@@ -30,6 +30,7 @@ public class DesertGenerator extends ChunkGenerator {
 //    private static final int ROAD_SHIFT_AMPLITUDE = 10;
 //    private static final float ROAD_SHIFT_SCALE = 0.05f;
     private static final int ROAD_WIDTH_OFFSET = 5;
+    private static final int ROAD_FADE_DISTANCE = 50;
     private static final Material[] ROAD_MATERIALS = {
             Material.COAL_ORE,
             Material.DEEPSLATE,
@@ -53,12 +54,13 @@ public class DesertGenerator extends ChunkGenerator {
                 int worldX = baseX + localX;
                 int worldZ = baseZ + localZ;
 
-                int yNoise;
-                if (!(worldX >= -ROAD_WIDTH_OFFSET - 10 && worldX <= ROAD_WIDTH_OFFSET  + 10)) {
-                    yNoise = (int) (BASE_Y + (this.sandNoise.noise(worldX * SAND_NOISE_SCALE, worldZ * SAND_NOISE_SCALE) * SAND_NOISE_AMPLITUDE));
-                } else {
-                    yNoise = BASE_Y;
-                }
+                double noise = sandNoise.noise(
+                        worldX * SAND_NOISE_SCALE,
+                        0.5,
+                        worldZ * SAND_NOISE_SCALE
+                ) + (double) SAND_NOISE_AMPLITUDE / 2;
+                int yNoise = getYNoise(worldX, noise);
+
                 for (int y = -63; y <= yNoise; y++) {
                     chunkData.setBlock(
                             localX,
@@ -103,5 +105,25 @@ public class DesertGenerator extends ChunkGenerator {
     ) {
         generateSand(chunkX, chunkZ, random, chunkData);
         generateRoad(chunkX, chunkZ, random, chunkData);
+    }
+
+
+    /* Helpers */
+    private static double smoothStep(double t) {
+        return t * t * (3 - 2 * t);
+    }
+
+    private static int getYNoise(int x, double noise) {
+        int distanceToRoad = Math.abs(x) - ROAD_WIDTH_OFFSET;
+        double factor;
+        if (distanceToRoad <= 0) {
+            factor = 0.0;
+        } else if (distanceToRoad >= ROAD_FADE_DISTANCE) {
+            factor = 1.0;
+        } else {
+            double t = distanceToRoad / (double) ROAD_FADE_DISTANCE;
+            factor = smoothStep(t);
+        }
+        return (int) (BASE_Y + noise * SAND_NOISE_AMPLITUDE * factor);
     }
 }
