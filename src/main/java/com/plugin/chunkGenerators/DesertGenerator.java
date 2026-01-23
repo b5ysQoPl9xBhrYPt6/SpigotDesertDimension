@@ -27,10 +27,8 @@ public class DesertGenerator extends ChunkGenerator {
             Material.SANDSTONE
     };
 
-//    private static final int ROAD_SHIFT_AMPLITUDE = 10;
-//    private static final float ROAD_SHIFT_SCALE = 0.05f;
     private static final int ROAD_WIDTH_OFFSET = 5;
-    private static final int ROAD_FADE_DISTANCE = 50;
+    private static final int ROAD_FADE_DISTANCE = 140;
     private static final Material[] ROAD_MATERIALS = {
             Material.COAL_ORE,
             Material.DEEPSLATE,
@@ -59,6 +57,9 @@ public class DesertGenerator extends ChunkGenerator {
                         0.5,
                         worldZ * SAND_NOISE_SCALE
                 ) + (double) SAND_NOISE_AMPLITUDE / 2;
+                if (Math.abs(noise) < 0.90) {
+                    noise = 0;
+                }
                 int yNoise = getYNoise(worldX, noise);
 
                 for (int y = -63; y <= yNoise; y++) {
