@@ -33,12 +33,12 @@ public class DesertGenerator extends ChunkGenerator {
             Material.COAL_ORE,
             Material.DEEPSLATE,
             Material.TUFF,
-            Material.GRAVEL,
             Material.DEEPSLATE_COAL_ORE
     };
-    private static final Material[] ROAD_BORDERS_MATERIALS = {
+    private static final Material[] ROAD_BORDER_MATERIALS = {
             Material.GRAVEL,
-            Material.ANDESITE
+            Material.ANDESITE,
+            Material.LIGHT_GRAY_CONCRETE_POWDER
     };
 
 
@@ -85,10 +85,22 @@ public class DesertGenerator extends ChunkGenerator {
                 int worldX = baseX + localX;
                 int worldZ = baseZ + localZ;
 
+                double roadBorderChance;
+                switch (Math.abs(worldX)) {
+                    case ROAD_WIDTH_OFFSET + 1 -> roadBorderChance = 0.70;
+                    case ROAD_WIDTH_OFFSET + 2 -> roadBorderChance = 0.35;
+                    case ROAD_WIDTH_OFFSET + 3 -> roadBorderChance = 0.05;
+                    default -> roadBorderChance = 0.0;
+                }
+                if (Math.abs(worldX) >= ROAD_WIDTH_OFFSET && Math.abs(worldX) <= ROAD_WIDTH_OFFSET + 3) {
+                    if (random.nextDouble() <= roadBorderChance){
+                        chunkData.setBlock(localX, BASE_Y, localZ, ROAD_BORDER_MATERIALS[random.nextInt(ROAD_BORDER_MATERIALS.length)]);
+                    }
+                }
                 if (worldX >= -ROAD_WIDTH_OFFSET && worldX <= ROAD_WIDTH_OFFSET) {
                     chunkData.setBlock(localX, BASE_Y, localZ, ROAD_MATERIALS[random.nextInt(ROAD_MATERIALS.length)]);
                 }
-                if (worldX == 0) {
+                if (worldX == 0 && worldZ % 4 != 0) {
                     chunkData.setBlock(localX, BASE_Y, localZ, Material.YELLOW_TERRACOTTA);
                 }
             }
@@ -107,7 +119,6 @@ public class DesertGenerator extends ChunkGenerator {
         generateSand(chunkX, chunkZ, random, chunkData);
         generateRoad(chunkX, chunkZ, random, chunkData);
     }
-
 
     /* Helpers */
     private static double smoothStep(double t) {
