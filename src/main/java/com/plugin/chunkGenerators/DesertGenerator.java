@@ -67,7 +67,7 @@ public class DesertGenerator extends ChunkGenerator {
                             localX,
                             y,
                             localZ,
-                            SAND_GROUND_MATERIALS[random.nextInt(SAND_GROUND_MATERIALS.length)]
+                            randomMaterial(random, SAND_GROUND_MATERIALS)
                     );
                 }
             }
@@ -84,21 +84,20 @@ public class DesertGenerator extends ChunkGenerator {
             for (int localZ = 0; localZ < 16; localZ++) {
                 int worldX = baseX + localX;
                 int worldZ = baseZ + localZ;
+                int absX = Math.abs(worldX);
 
-                double roadBorderChance;
-                switch (Math.abs(worldX)) {
-                    case ROAD_WIDTH_OFFSET + 1 -> roadBorderChance = 0.70;
-                    case ROAD_WIDTH_OFFSET + 2 -> roadBorderChance = 0.35;
-                    case ROAD_WIDTH_OFFSET + 3 -> roadBorderChance = 0.05;
-                    default -> roadBorderChance = 0.0;
+                if (isRoadBody(absX)) {
+                    chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_MATERIALS));
                 }
+
+                double roadBorderChance = getRoadBorderChance(absX);
                 if (Math.abs(worldX) >= ROAD_WIDTH_OFFSET && Math.abs(worldX) <= ROAD_WIDTH_OFFSET + 3) {
                     if (random.nextDouble() <= roadBorderChance){
-                        chunkData.setBlock(localX, BASE_Y, localZ, ROAD_BORDER_MATERIALS[random.nextInt(ROAD_BORDER_MATERIALS.length)]);
+                        chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_BORDER_MATERIALS));
                     }
                 }
                 if (worldX >= -ROAD_WIDTH_OFFSET && worldX <= ROAD_WIDTH_OFFSET) {
-                    chunkData.setBlock(localX, BASE_Y, localZ, ROAD_MATERIALS[random.nextInt(ROAD_MATERIALS.length)]);
+                    chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_MATERIALS));
                 }
                 if (worldX == 0 && worldZ % 4 != 0) {
                     chunkData.setBlock(localX, BASE_Y, localZ, Material.YELLOW_TERRACOTTA);
@@ -121,21 +120,37 @@ public class DesertGenerator extends ChunkGenerator {
     }
 
     /* Helpers */
+    private static Material randomMaterial(Random random, Material[] materials) {
+        return materials[random.nextInt(materials.length)];
+    }
+
+    private static boolean isRoadBody(int absX) {
+        return absX <= ROAD_WIDTH_OFFSET;
+    }
+
+    private static double getRoadBorderChance(int absX) {
+        return switch (absX) {
+            case ROAD_WIDTH_OFFSET + 1 -> 0.70;
+            case ROAD_WIDTH_OFFSET + 2 -> 0.35;
+            case ROAD_WIDTH_OFFSET + 3 -> 0.05;
+            default -> 0.0;
+        };
+    }
+
     private static double smoothStep(double t) {
         return t * t * (3 - 2 * t);
     }
 
     private static int getYNoise(int x, double noise) {
         int distanceToRoad = Math.abs(x) - ROAD_WIDTH_OFFSET;
-        double factor;
-        if (distanceToRoad <= 0) {
-            factor = 0.0;
-        } else if (distanceToRoad >= ROAD_FADE_DISTANCE) {
-            factor = 1.0;
-        } else {
-            double t = distanceToRoad / (double) ROAD_FADE_DISTANCE;
-            factor = smoothStep(t);
-        }
+
+        double factor = switch (Integer.signum(distanceToRoad)) {
+            case -1, 0 -> 0.0;
+            default -> {
+                if (distanceToRoad >= ROAD_FADE_DISTANCE) yield 1.0;
+                yield smoothStep(distanceToRoad / (double) ROAD_FADE_DISTANCE);
+            }
+        };
         return (int) (BASE_Y + noise * SAND_NOISE_AMPLITUDE * factor);
     }
 }
