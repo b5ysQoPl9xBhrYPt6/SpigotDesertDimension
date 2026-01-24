@@ -20,7 +20,7 @@ public class DesertGenerator extends ChunkGenerator {
     private static final int BASE_Y = 64;
 
     private static final int SAND_NOISE_AMPLITUDE = 2;
-    private static final float SAND_NOISE_SCALE = 0.015f;
+    private static final double SAND_NOISE_SCALE = 0.015;
     private static final Material[] SAND_GROUND_MATERIALS = {
             Material.SAND,
             Material.SMOOTH_SANDSTONE,
@@ -41,8 +41,43 @@ public class DesertGenerator extends ChunkGenerator {
             Material.LIGHT_GRAY_CONCRETE_POWDER
     };
 
+    private static final double CACTUS_SPAWN_CHANCE = 0.0008;
+    private static final double BUSH_SPAWN_CHANCE = 0.004;
+
+    private static final int CACTUS_MAX_SIZE = 4;
+
 
     /* Sub-generators */
+    private void generateDecorations(int chunkX, int chunkZ, @NonNull Random random, @NonNull ChunkData chunkData) {
+        int baseX = chunkX * 16;
+        int baseZ = chunkZ * 16;
+
+        for (int localX = 0; localX < 16; localX++) {
+            for (int localZ = 0; localZ < 16; localZ++) {
+                int worldX = baseX + localX;
+                int worldZ = baseZ + localZ;
+
+                if (Math.abs(worldX) >= ROAD_WIDTH_OFFSET * 2 + 3) {
+                    if (random.nextDouble() < CACTUS_SPAWN_CHANCE) {
+                        int y = BASE_Y;
+                        while (!(chunkData.getBlockData(localX, y, localZ).getMaterial() == Material.AIR)) y += 1;
+                        int cactusSize = random.nextInt(CACTUS_MAX_SIZE);
+                        for (int cactusY = 0; cactusY <= cactusSize; cactusY++) {
+                            chunkData.setBlock(localX, y + cactusY, localZ, Material.CACTUS);
+                        }
+                        if (random.nextBoolean()) {
+                            chunkData.setBlock(localX, y + cactusSize + 1, localZ, Material.CACTUS_FLOWER);
+                        }
+                    } else if (random.nextDouble() < BUSH_SPAWN_CHANCE) {
+                        int y = BASE_Y;
+                        while (!(chunkData.getBlockData(localX, y, localZ).getMaterial() == Material.AIR)) y += 1;
+                        chunkData.setBlock(localX, y, localZ, Material.DEAD_BUSH);
+                    }
+                }
+            }
+        }
+    }
+
     private void generateSand(int chunkX, int chunkZ, @NonNull Random random, @NonNull ChunkData chunkData) {
         int baseX = chunkX * 16;
         int baseZ = chunkZ * 16;
@@ -117,6 +152,7 @@ public class DesertGenerator extends ChunkGenerator {
     ) {
         generateSand(chunkX, chunkZ, random, chunkData);
         generateRoad(chunkX, chunkZ, random, chunkData);
+        generateDecorations(chunkX, chunkZ, random, chunkData);
     }
 
     /* Helpers */
