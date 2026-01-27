@@ -2,6 +2,7 @@ package com.plugin;
 
 import com.plugin.chunkGenerators.DesertGenerator;
 import com.plugin.chunkGenerators.desert.DecorationsGenerator;
+import com.plugin.chunkGenerators.desert.PolesGenerator;
 import com.plugin.chunkGenerators.desert.RoadGenerator;
 import com.plugin.chunkGenerators.desert.SandGenerator;
 
@@ -23,6 +24,9 @@ public final class MainPlugin extends JavaPlugin {
     private static final int CACTUS_MAX_SIZE = 4;
     private static final double BUSH_SPAWN_CHANCE = 0.004;
 
+    private static final int POLE_DISTANCE = 10;
+    private static final int HIGH_POLE_DISTANCE = POLE_DISTANCE * 5;
+
     @Override
     public void onEnable() {
         DesertGenerator generator = new DesertGenerator(
@@ -39,9 +43,13 @@ public final class MainPlugin extends JavaPlugin {
                         BUSH_SPAWN_CHANCE,
                         BASE_Y
                 ),
-                BASE_Y,
-                loadStructure("structures/pole.nbt"),
-                loadStructure("structures/pole_high.nbt")
+                new PolesGenerator(
+                        BASE_Y,
+                        POLE_DISTANCE,
+                        HIGH_POLE_DISTANCE,
+                        loadStructure("structures/pole.nbt"),
+                        loadStructure("structures/pole_high.nbt")
+                )
         );
         Bukkit.getPluginManager().registerEvents(generator, this);
 
