@@ -1,6 +1,10 @@
 package com.plugin;
 
 import com.plugin.chunkGenerators.DesertGenerator;
+import com.plugin.chunkGenerators.desert.DecorationsGenerator;
+import com.plugin.chunkGenerators.desert.RoadGenerator;
+import com.plugin.chunkGenerators.desert.SandGenerator;
+
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -13,10 +17,29 @@ import java.io.InputStream;
 import java.util.Random;
 
 public final class MainPlugin extends JavaPlugin {
+    private static final int BASE_Y = 64;
+
+    private static final double CACTUS_SPAWN_CHANCE = 0.0008;
+    private static final int CACTUS_MAX_SIZE = 4;
+    private static final double BUSH_SPAWN_CHANCE = 0.004;
+
     @Override
     public void onEnable() {
         DesertGenerator generator = new DesertGenerator(
-                new Random().nextLong(),
+                new SandGenerator(
+                        new Random().nextLong(),
+                        BASE_Y
+                ),
+                new RoadGenerator(
+                        BASE_Y
+                ),
+                new DecorationsGenerator(
+                        CACTUS_SPAWN_CHANCE,
+                        CACTUS_MAX_SIZE,
+                        BUSH_SPAWN_CHANCE,
+                        BASE_Y
+                ),
+                BASE_Y,
                 loadStructure("structures/pole.nbt"),
                 loadStructure("structures/pole_high.nbt")
         );
