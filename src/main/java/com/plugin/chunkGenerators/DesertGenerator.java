@@ -1,18 +1,33 @@
 package com.plugin.chunkGenerators;
 
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.structure.Mirror;
+import org.bukkit.block.structure.StructureRotation;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
+import org.bukkit.structure.Structure;
 import org.bukkit.util.noise.SimplexNoiseGenerator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Random;
 
-public class DesertGenerator extends ChunkGenerator {
+public class DesertGenerator extends ChunkGenerator implements Listener {
     private final SimplexNoiseGenerator sandNoise;
 
-    public DesertGenerator(long seed) {
+    private final Structure poleStructure;
+    private final Structure highPoleStructure;
+
+    public DesertGenerator(long seed, Structure poleStructure, Structure highPoleStructure) {
         this.sandNoise = new SimplexNoiseGenerator(seed);
+
+        this.poleStructure = poleStructure;
+        this.highPoleStructure = highPoleStructure;
     }
 
 
@@ -43,8 +58,10 @@ public class DesertGenerator extends ChunkGenerator {
 
     private static final double CACTUS_SPAWN_CHANCE = 0.0008;
     private static final double BUSH_SPAWN_CHANCE = 0.004;
-
     private static final int CACTUS_MAX_SIZE = 4;
+
+    private static final int POLE_DISTANCE = 10;
+    private static final int HIGH_POLE_DISTANCE = POLE_DISTANCE * 5;
 
 
     /* Sub-generators */
@@ -136,6 +153,50 @@ public class DesertGenerator extends ChunkGenerator {
                 }
                 if (worldX == 0 && worldZ % 4 != 0) {
                     chunkData.setBlock(localX, BASE_Y, localZ, Material.YELLOW_TERRACOTTA);
+                }
+            }
+        }
+    }
+
+
+    /* Events */
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent e) {
+        if (!e.isNewChunk()) return;
+
+        Chunk chunk = e.getChunk();
+        World world = chunk.getWorld();
+
+        int baseX = chunk.getX() * 16;
+        int baseZ = chunk.getZ() * 16;
+
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                int worldX = baseX + x;
+                int worldZ = baseZ + z;
+
+                if (worldX == 8) {
+                    if (Math.abs(worldZ) % POLE_DISTANCE == 0 && !(Math.abs(worldZ) % HIGH_POLE_DISTANCE == 0)) {
+                        poleStructure.place(
+                                new Location(world, worldX, BASE_Y + 1, worldZ),
+                                false,
+                                StructureRotation.NONE,
+                                Mirror.NONE,
+                                0,
+                                1.0f,
+                                new Random(worldZ)
+                        );
+                    } else if (Math.abs(worldZ) % HIGH_POLE_DISTANCE == 0) {
+                        highPoleStructure.place(
+                                new Location(world, worldX - 1, BASE_Y + 1, worldZ),
+                                false,
+                                StructureRotation.NONE,
+                                Mirror.NONE,
+                                0,
+                                1.0f,
+                                new Random(worldZ)
+                        );
+                    }
                 }
             }
         }
