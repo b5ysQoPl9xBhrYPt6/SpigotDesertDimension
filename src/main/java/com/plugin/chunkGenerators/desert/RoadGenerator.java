@@ -28,7 +28,7 @@ public class RoadGenerator {
 
 
     public void generateRoad(int chunkX, int chunkZ, Random random, ChunkGenerator.ChunkData chunkData) {
-        /* Road direction - X */
+        /* Road direction - Z */
 
         int baseX = chunkX * 16;
         int baseZ = chunkZ * 16;
@@ -43,12 +43,15 @@ public class RoadGenerator {
                     chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_MATERIALS));
                 }
 
-                double roadBorderChance = getRoadBorderChance(absX);
-                if (Math.abs(worldX) >= 5 && Math.abs(worldX) <= 5 + 3) {
-                    if (random.nextDouble() <= roadBorderChance){
-                        chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_BORDER_MATERIALS));
+                if (!(worldZ >= 1000 && worldZ <= 2000)) {
+                    double roadBorderChance = getRoadBorderChance(absX);
+                    if (Math.abs(worldX) >= 5 && Math.abs(worldX) <= 5 + 3) {
+                        if (random.nextDouble() <= roadBorderChance){
+                            chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_BORDER_MATERIALS));
+                        }
                     }
                 }
+
                 if (worldX >= -5 && worldX <= 5) {
                     chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_MATERIALS));
                 }

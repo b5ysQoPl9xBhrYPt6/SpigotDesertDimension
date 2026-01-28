@@ -36,20 +36,22 @@ public class DecorationsGenerator {
                 /* int worldZ = baseZ + localZ; */
 
                 if (Math.abs(worldX) >= 5 * 2 + 3) {
-                    if (random.nextDouble() < CACTUS_SPAWN_CHANCE) {
-                        int y = BASE_Y;
-                        while (!(chunkData.getBlockData(localX, y, localZ).getMaterial() == Material.AIR)) y += 1;
-                        int cactusSize = random.nextInt(CACTUS_MAX_SIZE);
-                        for (int cactusY = 0; cactusY <= cactusSize; cactusY++) {
-                            chunkData.setBlock(localX, y + cactusY, localZ, Material.CACTUS);
+                    if (!(chunkData.getBlockData(localX, BASE_Y - 1, localZ).getMaterial() == Material.AIR)) {
+                        if (random.nextDouble() < CACTUS_SPAWN_CHANCE) {
+                            int y = BASE_Y;
+                            while (!(chunkData.getBlockData(localX, y, localZ).getMaterial() == Material.AIR)) y += 1;
+                            int cactusSize = random.nextInt(CACTUS_MAX_SIZE);
+                            for (int cactusY = 0; cactusY <= cactusSize; cactusY++) {
+                                chunkData.setBlock(localX, y + cactusY, localZ, Material.CACTUS);
+                            }
+                            if (random.nextBoolean()) {
+                                chunkData.setBlock(localX, y + cactusSize + 1, localZ, Material.CACTUS_FLOWER);
+                            }
+                        } else if (random.nextDouble() < BUSH_SPAWN_CHANCE) {
+                            int y = BASE_Y;
+                            while (!(chunkData.getBlockData(localX, y, localZ).getMaterial() == Material.AIR)) y += 1;
+                            chunkData.setBlock(localX, y, localZ, Material.DEAD_BUSH);
                         }
-                        if (random.nextBoolean()) {
-                            chunkData.setBlock(localX, y + cactusSize + 1, localZ, Material.CACTUS_FLOWER);
-                        }
-                    } else if (random.nextDouble() < BUSH_SPAWN_CHANCE) {
-                        int y = BASE_Y;
-                        while (!(chunkData.getBlockData(localX, y, localZ).getMaterial() == Material.AIR)) y += 1;
-                        chunkData.setBlock(localX, y, localZ, Material.DEAD_BUSH);
                     }
                 }
             }
