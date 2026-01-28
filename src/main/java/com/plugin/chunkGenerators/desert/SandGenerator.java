@@ -9,10 +9,26 @@ import java.util.Random;
 public class SandGenerator {
     private final SimplexNoiseGenerator sandNoise;
 
-    public SandGenerator(long seed, int baseY) {
+    public SandGenerator(
+            long seed,
+            int baseY,
+            int abyssStart,
+            int abyssStartLength,
+            int abyssLength,
+            int abyssEndLength,
+            int abyssYOffset,
+            int undergroundMaterialStart
+    ) {
         this.sandNoise = new SimplexNoiseGenerator(seed);
 
         this.BASE_Y = baseY;
+        this.Z_START = abyssStart;
+        this.DESCEND_LENGTH = abyssStartLength;
+        this.HOLD_LENGTH = abyssLength;
+        this.ASCEND_LENGTH = abyssEndLength;
+        this.Y_OFFSET = abyssYOffset;
+
+        this.UNDERGROUND_MATERIAL_START = undergroundMaterialStart;
     }
 
     /* Constants */
@@ -28,13 +44,25 @@ public class SandGenerator {
 
     private static final int ROAD_FADE_DISTANCE = 140;
 
-    private static final int Z_START = 1000;
-    private static final int DESCEND_LENGTH = 400;
-    private static final int HOLD_LENGTH = 400;
-    private static final int ASCEND_LENGTH = 300;
-    private static final int Y_OFFSET = 80;
+    private static final double SAND_NOISE_BOOST = 5.0;
 
-    private static final double SAND_NOISE_BOOST = 4.0;
+    private static final int UNDERGROUND_LENGTH = 10;
+    private static final Material[] UNDERGROUND_MATERIALS = {
+            Material.ANDESITE,
+            Material.GRANITE,
+            Material.ROOTED_DIRT,
+            Material.COARSE_DIRT,
+            Material.DRIPSTONE_BLOCK
+    };
+
+    /* Specified constants */
+    private final int Z_START;
+    private final int DESCEND_LENGTH;
+    private final int HOLD_LENGTH;
+    private final int ASCEND_LENGTH;
+    private final int Y_OFFSET;
+
+    private final int UNDERGROUND_MATERIAL_START;
 
 
     public void generateSand(int chunkX, int chunkZ, Random random, ChunkGenerator.ChunkData chunkData) {
@@ -59,12 +87,30 @@ public class SandGenerator {
                 int yNoise = getYNoise(worldX, noise, BASE_Y + zOffset);
 
                 for (int y = -63; y <= yNoise; y++) {
-                    chunkData.setBlock(
-                            localX,
-                            y,
-                            localZ,
-                            randomMaterial(random, SAND_GROUND_MATERIALS)
-                    );
+                    if (y > UNDERGROUND_MATERIAL_START) {
+                        chunkData.setBlock(
+                                localX,
+                                y,
+                                localZ,
+                                randomMaterial(random, SAND_GROUND_MATERIALS)
+                        );
+                    } else {
+                        if (random.nextDouble() <= (double) (UNDERGROUND_MATERIAL_START - y) / UNDERGROUND_LENGTH) {
+                            chunkData.setBlock(
+                                    localX,
+                                    y,
+                                    localZ,
+                                    randomMaterial(random, UNDERGROUND_MATERIALS)
+                            );
+                        } else {
+                            chunkData.setBlock(
+                                    localX,
+                                    y,
+                                    localZ,
+                                    randomMaterial(random, SAND_GROUND_MATERIALS)
+                            );
+                        }
+                    }
                 }
             }
         }
@@ -105,7 +151,7 @@ public class SandGenerator {
         return SAND_NOISE_BOOST;
     }
 
-    private static int getZYOffset(int worldZ) {
+    private int getZYOffset(int worldZ) {
         int dz = worldZ - Z_START;
 
         if (dz < 0) return 0;

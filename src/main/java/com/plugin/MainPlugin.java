@@ -6,6 +6,7 @@ import com.plugin.chunkGenerators.desert.PolesGenerator;
 import com.plugin.chunkGenerators.desert.RoadGenerator;
 import com.plugin.chunkGenerators.desert.SandGenerator;
 
+import com.plugin.environment.DesertEnvironment;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -18,35 +19,36 @@ import java.io.InputStream;
 import java.util.Random;
 
 public final class MainPlugin extends JavaPlugin {
-    private static final int BASE_Y = 64;
-
-    private static final double CACTUS_SPAWN_CHANCE = 0.0008;
-    private static final int CACTUS_MAX_SIZE = 4;
-    private static final double BUSH_SPAWN_CHANCE = 0.004;
-
-    private static final int POLE_DISTANCE = 10;
-    private static final int HIGH_POLE_DISTANCE = POLE_DISTANCE * 5;
-
     @Override
     public void onEnable() {
         DesertGenerator generator = new DesertGenerator(
                 new SandGenerator(
                         new Random().nextLong(),
-                        BASE_Y
+                        DesertEnvironment.BASE_Y,
+                        DesertEnvironment.Z_START,
+                        DesertEnvironment.DESCEND_LENGTH,
+                        DesertEnvironment.HOLD_LENGTH,
+                        DesertEnvironment.ASCEND_LENGTH,
+                        DesertEnvironment.Y_OFFSET,
+                        DesertEnvironment.UNDERGROUND_MATERIAL_START
                 ),
                 new RoadGenerator(
-                        BASE_Y
+                        DesertEnvironment.BASE_Y,
+                        DesertEnvironment.Z_START,
+                        DesertEnvironment.DESCEND_LENGTH,
+                        DesertEnvironment.HOLD_LENGTH,
+                        DesertEnvironment.ASCEND_LENGTH
                 ),
                 new DecorationsGenerator(
-                        CACTUS_SPAWN_CHANCE,
-                        CACTUS_MAX_SIZE,
-                        BUSH_SPAWN_CHANCE,
-                        BASE_Y
+                        DesertEnvironment.CACTUS_SPAWN_CHANCE,
+                        DesertEnvironment.CACTUS_MAX_SIZE,
+                        DesertEnvironment.BUSH_SPAWN_CHANCE,
+                        DesertEnvironment.BASE_Y
                 ),
                 new PolesGenerator(
-                        BASE_Y,
-                        POLE_DISTANCE,
-                        HIGH_POLE_DISTANCE,
+                        DesertEnvironment.BASE_Y,
+                        DesertEnvironment.POLE_DISTANCE,
+                        DesertEnvironment.HIGH_POLE_DISTANCE,
                         loadStructure("structures/pole.nbt"),
                         loadStructure("structures/pole_high.nbt")
                 )

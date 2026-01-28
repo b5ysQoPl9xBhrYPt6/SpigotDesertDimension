@@ -6,13 +6,30 @@ import org.bukkit.generator.ChunkGenerator;
 import java.util.Random;
 
 public class RoadGenerator {
-    public RoadGenerator(int baseY) {
+    public RoadGenerator(
+            int baseY,
+            int abyssStart,
+            int abyssStartLength,
+            int abyssLength,
+            int abyssEndLength
+    ) {
         this.BASE_Y = baseY;
+
+        this.Z_START = abyssStart;
+        this.DESCEND_LENGTH = abyssStartLength;
+        this.HOLD_LENGTH = abyssLength;
+        this.ASCEND_LENGTH = abyssEndLength;
     }
 
 
-    /* Constants */
+    /* Specified constants */
     private final int BASE_Y;
+
+    private final int Z_START;
+    private final int DESCEND_LENGTH;
+    private final int HOLD_LENGTH;
+    private final int ASCEND_LENGTH;
+
 
     private static final Material[] ROAD_MATERIALS = {
             Material.COAL_ORE,
@@ -24,6 +41,10 @@ public class RoadGenerator {
             Material.GRAVEL,
             Material.ANDESITE,
             Material.LIGHT_GRAY_CONCRETE_POWDER
+    };
+    private static final Material[] BRIDGE_ROAD_BORDER_MATERIALS = {
+            Material.STONE,
+            Material.ANDESITE
     };
 
 
@@ -43,12 +64,16 @@ public class RoadGenerator {
                     chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_MATERIALS));
                 }
 
-                if (!(worldZ >= 1000 && worldZ <= 2000)) {
+                if (!(worldZ >= Z_START && worldZ <= (Z_START + DESCEND_LENGTH + HOLD_LENGTH + ASCEND_LENGTH))) {
                     double roadBorderChance = getRoadBorderChance(absX);
                     if (Math.abs(worldX) >= 5 && Math.abs(worldX) <= 5 + 3) {
                         if (random.nextDouble() <= roadBorderChance){
                             chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_BORDER_MATERIALS));
                         }
+                    }
+                } else {
+                    if (Math.abs(worldX) >= 5 && Math.abs(worldX) <= 5 + 2) {
+                        chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, BRIDGE_ROAD_BORDER_MATERIALS));
                     }
                 }
 
