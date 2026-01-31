@@ -1,10 +1,7 @@
 package com.plugin;
 
 import com.plugin.chunkGenerators.DesertGenerator;
-import com.plugin.chunkGenerators.desert.DecorationsGenerator;
-import com.plugin.chunkGenerators.desert.PolesGenerator;
-import com.plugin.chunkGenerators.desert.RoadGenerator;
-import com.plugin.chunkGenerators.desert.SandGenerator;
+import com.plugin.chunkGenerators.desert.*;
 
 import com.plugin.environment.DesertEnvironment;
 import org.bukkit.Bukkit;
@@ -51,6 +48,15 @@ public final class MainPlugin extends JavaPlugin {
                         DesertEnvironment.HIGH_POLE_DISTANCE,
                         loadStructure("structures/pole.nbt"),
                         loadStructure("structures/pole_high.nbt")
+                ),
+                new BridgeSupportGenerator(
+                        this,
+                        loadStructure("structures/mask/bridge_support_mask.nbt"),
+                        DesertEnvironment.BASE_Y,
+                        DesertEnvironment.Z_START,
+                        DesertEnvironment.DESCEND_LENGTH
+                                + DesertEnvironment.HOLD_LENGTH
+                                + DesertEnvironment.ASCEND_LENGTH
                 )
         );
         Bukkit.getPluginManager().registerEvents(generator, this);

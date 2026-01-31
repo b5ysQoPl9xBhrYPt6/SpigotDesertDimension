@@ -55,6 +55,13 @@ public class SandGenerator {
             Material.DRIPSTONE_BLOCK
     };
 
+    private static final Material[] BRIDGE_SUPPORT_BLOCK_MATERIALS = {
+            Material.STONE_BRICKS,
+            Material.CRACKED_STONE_BRICKS,
+            Material.MOSSY_STONE_BRICKS,
+            Material.CHISELED_STONE_BRICKS
+    };
+
     /* Specified constants */
     private final int Z_START;
     private final int DESCEND_LENGTH;
@@ -66,6 +73,7 @@ public class SandGenerator {
 
 
     public void generateSand(int chunkX, int chunkZ, Random random, ChunkGenerator.ChunkData chunkData) {
+        generateBridgeSupportBlock(chunkX, chunkZ, random, chunkData);
         int baseX = chunkX * 16;
         int baseZ = chunkZ * 16;
 
@@ -118,6 +126,28 @@ public class SandGenerator {
 
 
     /* Helpers */
+    private void generateBridgeSupportBlock(int chunkX, int chunkZ, Random random, ChunkGenerator.ChunkData chunkData) {
+        int baseX = chunkX * 16;
+        int baseZ = chunkZ * 16;
+
+        for (int localX = 0; localX < 16; localX++) {
+            for (int localZ = 0; localZ < 16; localZ++) {
+                int worldX = baseX + localX;
+                int worldZ = baseZ + localZ;
+
+                for (int localY = -63; localY <= 15; localY++) {
+                    if (worldX <= 7 && worldX >= -7) {
+                        if (worldZ >= Z_START && worldZ <= Z_START + ASCEND_LENGTH + HOLD_LENGTH + DESCEND_LENGTH) {
+                            if (chunkData.getBlockData(localX, localY, localZ).getMaterial() == Material.AIR) {
+                                chunkData.setBlock(localX, localY, localZ, randomMaterial(random, BRIDGE_SUPPORT_BLOCK_MATERIALS));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private static int getYNoise(int x, double noise, int baseY) {
         int distanceToRoad = Math.abs(x) - 5;
 

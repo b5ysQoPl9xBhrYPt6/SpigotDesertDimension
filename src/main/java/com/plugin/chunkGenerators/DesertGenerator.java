@@ -1,9 +1,6 @@
 package com.plugin.chunkGenerators;
 
-import com.plugin.chunkGenerators.desert.DecorationsGenerator;
-import com.plugin.chunkGenerators.desert.PolesGenerator;
-import com.plugin.chunkGenerators.desert.RoadGenerator;
-import com.plugin.chunkGenerators.desert.SandGenerator;
+import com.plugin.chunkGenerators.desert.*;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,23 +16,27 @@ public class DesertGenerator extends ChunkGenerator implements Listener {
     private final RoadGenerator roadGenerator;
     private final DecorationsGenerator decorationsGenerator;
     private final PolesGenerator polesGenerator;
+    private final BridgeSupportGenerator bridgeSupportGenerator;
 
     public DesertGenerator(
             SandGenerator sandGenerator,
             RoadGenerator roadGenerator,
             DecorationsGenerator decorationsGenerator,
-            PolesGenerator polesGenerator
+            PolesGenerator polesGenerator,
+            BridgeSupportGenerator bridgeSupportGenerator
     ) {
         this.sandGenerator = sandGenerator;
         this.roadGenerator = roadGenerator;
         this.decorationsGenerator = decorationsGenerator;
         this.polesGenerator = polesGenerator;
+        this.bridgeSupportGenerator = bridgeSupportGenerator;
     }
 
     /* Events */
     @EventHandler
     public void onChunkLoad(ChunkLoadEvent e) {
         polesGenerator.generatePoles(e);
+        bridgeSupportGenerator.generateBridgeSupport(e);
     }
 
 
