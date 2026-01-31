@@ -30,6 +30,7 @@ public final class MainPlugin extends JavaPlugin {
                         DesertEnvironment.UNDERGROUND_MATERIAL_START
                 ),
                 new RoadGenerator(
+                        new Random().nextLong(),
                         DesertEnvironment.BASE_Y,
                         DesertEnvironment.Z_START,
                         DesertEnvironment.DESCEND_LENGTH,
@@ -61,6 +62,7 @@ public final class MainPlugin extends JavaPlugin {
         );
         Bukkit.getPluginManager().registerEvents(generator, this);
 
+        /* Temporary */
         WorldCreator wc = new WorldCreator("desert_world");
 
         wc.generator(generator);
