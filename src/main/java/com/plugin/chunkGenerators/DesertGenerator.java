@@ -21,6 +21,7 @@ public class DesertGenerator extends ChunkGenerator implements Listener {
     private final PolesGenerator polesGenerator;
     private final BridgeSupportGenerator bridgeSupportGenerator;
 
+    private final long ROAD_NOISE_SEED;
     private final int BASE_Y;
     private final int Z_START;
     private final int ASCEND_LENGTH;
@@ -33,6 +34,7 @@ public class DesertGenerator extends ChunkGenerator implements Listener {
             DecorationsGenerator decorationsGenerator,
             PolesGenerator polesGenerator,
             BridgeSupportGenerator bridgeSupportGenerator,
+            long roadNoiseSeed,
             int baseY,
             int zStart,
             int ascendLength,
@@ -45,6 +47,7 @@ public class DesertGenerator extends ChunkGenerator implements Listener {
         this.polesGenerator = polesGenerator;
         this.bridgeSupportGenerator = bridgeSupportGenerator;
 
+        this.ROAD_NOISE_SEED = roadNoiseSeed;
         this.BASE_Y = baseY;
         this.Z_START = zStart;
         this.ASCEND_LENGTH = ascendLength;
@@ -74,6 +77,6 @@ public class DesertGenerator extends ChunkGenerator implements Listener {
 
     @Override
     public @NonNull List<BlockPopulator> getDefaultPopulators(@NonNull World world) {
-        return List.of(new RoadPopulator(BASE_Y, Z_START, Z_START + ASCEND_LENGTH + HOLD_LENGTH + DESCEND_LENGTH));
+        return List.of(new RoadPopulator(ROAD_NOISE_SEED, BASE_Y, Z_START, Z_START + ASCEND_LENGTH + HOLD_LENGTH + DESCEND_LENGTH));
     }
 }

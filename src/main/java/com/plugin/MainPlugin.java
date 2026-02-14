@@ -18,9 +18,12 @@ import java.util.Random;
 public final class MainPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
+        Random random = new Random();
+        long desertSeed = random.nextLong();
+
         DesertGenerator generator = new DesertGenerator(
                 new SandGenerator(
-                        new Random().nextLong(),
+                        desertSeed,
                         DesertEnvironment.BASE_Y,
                         DesertEnvironment.Z_START,
                         DesertEnvironment.DESCEND_LENGTH,
@@ -30,7 +33,7 @@ public final class MainPlugin extends JavaPlugin {
                         DesertEnvironment.UNDERGROUND_MATERIAL_START
                 ),
                 new RoadGenerator(
-                        new Random().nextLong(),
+                        desertSeed,
                         DesertEnvironment.BASE_Y,
                         DesertEnvironment.Z_START,
                         DesertEnvironment.DESCEND_LENGTH,
@@ -59,6 +62,7 @@ public final class MainPlugin extends JavaPlugin {
                                 + DesertEnvironment.HOLD_LENGTH
                                 + DesertEnvironment.ASCEND_LENGTH
                 ),
+                desertSeed,
                 DesertEnvironment.BASE_Y,
                 DesertEnvironment.Z_START,
                 DesertEnvironment.ASCEND_LENGTH,

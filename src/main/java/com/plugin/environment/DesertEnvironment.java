@@ -12,6 +12,11 @@ public class DesertEnvironment {
     public static final int ASCEND_LENGTH = 300;
     public static final int Y_OFFSET = 80;
 
+    /* Bridge */
+    public static final double BRIDGE_ROAD_BORDER_NOISE_SCALE = 0.065;
+    public static final double BRIDGE_ROAD_BORDER_NOISE_SENSITIVITY = 0.5;
+    public static final double BRIDGE_ROAD_NOISE_BROKEN_SCALE = 0.080;
+
     /* Decorations */
     public static final double CACTUS_SPAWN_CHANCE = 0.0008;
     public static final int CACTUS_MAX_SIZE = 4;

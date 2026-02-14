@@ -1,5 +1,6 @@
 package com.plugin.chunkGenerators.desert;
 
+import com.plugin.environment.DesertEnvironment;
 import org.bukkit.Material;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.util.noise.SimplexNoiseGenerator;
@@ -7,7 +8,7 @@ import org.bukkit.util.noise.SimplexNoiseGenerator;
 import java.util.Random;
 
 public class RoadGenerator {
-    private final SimplexNoiseGenerator noise;
+    private final SimplexNoiseGenerator bordersNoise;
 
     public RoadGenerator(
             long seed,
@@ -23,7 +24,7 @@ public class RoadGenerator {
         this.HOLD_LENGTH = abyssLength;
         this.ASCEND_LENGTH = abyssEndLength;
 
-        this.noise = new SimplexNoiseGenerator(seed);
+        this.bordersNoise = new SimplexNoiseGenerator(seed);
     }
 
 
@@ -34,11 +35,6 @@ public class RoadGenerator {
     private final int HOLD_LENGTH;
     private final int ASCEND_LENGTH;
 
-
-    /* Constants */
-    private static final double BRIDGE_ROAD_NOISE_SCALE = 0.065;
-    private static final double BRIDGE_ROAD_NOISE_SENSITIVITY = 0.5;
-    private static final double BRIDGE_ROAD_NOISE_BROKEN_SCALE = 0.080;
 
     private static final Material[] ROAD_MATERIALS = {
             Material.COAL_ORE,
@@ -97,14 +93,14 @@ public class RoadGenerator {
                         }
                     } else {
                         if (Math.abs(worldX) >= 5 && Math.abs(worldX) <= 5 + 2) {
-                            if (getNoise(noise, worldX, worldZ) < BRIDGE_ROAD_NOISE_SENSITIVITY) {
+                            if (getNoise(bordersNoise, worldX, worldZ) < DesertEnvironment.BRIDGE_ROAD_BORDER_NOISE_SENSITIVITY) {
                                 chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, BRIDGE_ROAD_BORDER_MATERIALS));
                             }
                         }
                     }
 
                     if (Math.abs(worldX) <= 5) {
-                        Material material = getRoadMaterialFromNoise(noise, random, worldX, worldZ);
+                        Material material = getRoadMaterialFromNoise(bordersNoise, random, worldX, worldZ);
                         chunkData.setBlock(localX, BASE_Y, localZ, material);
                     }
 
@@ -127,12 +123,12 @@ public class RoadGenerator {
     /* Helpers */
     private double getNoise(SimplexNoiseGenerator noise, int x, int z) {
         return (z >= Z_START && z <= Z_START + ASCEND_LENGTH + HOLD_LENGTH + DESCEND_LENGTH)
-                ? noise.noise(x * BRIDGE_ROAD_NOISE_SCALE, z * BRIDGE_ROAD_NOISE_SCALE)
+                ? noise.noise(x * DesertEnvironment.BRIDGE_ROAD_BORDER_NOISE_SCALE, z * DesertEnvironment.BRIDGE_ROAD_BORDER_NOISE_SCALE)
                 : 0.0;
     }
 
     private Material getRoadMaterialFromNoise(SimplexNoiseGenerator noise, Random random, int x, int z) {
-        double noiseValue = noise.noise(x * BRIDGE_ROAD_NOISE_BROKEN_SCALE, z * BRIDGE_ROAD_NOISE_BROKEN_SCALE);
+        double noiseValue = noise.noise(x * DesertEnvironment.BRIDGE_ROAD_NOISE_BROKEN_SCALE, z * DesertEnvironment.BRIDGE_ROAD_NOISE_BROKEN_SCALE);
         if (z >= Z_START && z <= Z_START + ASCEND_LENGTH + HOLD_LENGTH+ DESCEND_LENGTH) {
             if (noiseValue <= 0.25) {
                 return randomMaterial(random, ROAD_MATERIALS);
