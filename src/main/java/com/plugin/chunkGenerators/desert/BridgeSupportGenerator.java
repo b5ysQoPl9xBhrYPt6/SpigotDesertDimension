@@ -2,6 +2,7 @@ package com.plugin.chunkGenerators.desert;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -54,8 +55,7 @@ public class BridgeSupportGenerator {
     private final int Z_START;
     private final int LENGTH;
 
-
-    public void generateBridgeSupport(ChunkLoadEvent e) {
+    public void eGenerateBridgeSupport(ChunkLoadEvent e) {
         Chunk chunk = e.getChunk();
         World world = chunk.getWorld();
 
@@ -115,11 +115,15 @@ public class BridgeSupportGenerator {
                         if (!(type == material)) continue;
 
                         Material[] group = MASK_GROUPS.get(type);
-                        Material newType = group[random.nextInt(group.length)];
+                        Material newType = randomMaterial(random, group);
                         block.setType(newType, true);
                     }
                 }
             }
         }
+    }
+
+    private static Material randomMaterial(Random random, Material[] materials) {
+        return materials[random.nextInt(materials.length)];
     }
 }

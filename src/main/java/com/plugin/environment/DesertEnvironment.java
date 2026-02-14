@@ -6,7 +6,7 @@ public class DesertEnvironment {
     public static final int UNDERGROUND_MATERIAL_START = -3;
 
     /* Abyss */
-    public static final int Z_START = 1000;
+    public static final int Z_START = 5000;
     public static final int DESCEND_LENGTH = 400;
     public static final int HOLD_LENGTH = 400;
     public static final int ASCEND_LENGTH = 300;

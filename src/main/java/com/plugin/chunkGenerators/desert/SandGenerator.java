@@ -8,6 +8,7 @@ import java.util.Random;
 
 public class SandGenerator {
     private final SimplexNoiseGenerator sandNoise;
+    private final SimplexNoiseGenerator biomeNoise;
 
     public SandGenerator(
             long seed,
@@ -20,6 +21,7 @@ public class SandGenerator {
             int undergroundMaterialStart
     ) {
         this.sandNoise = new SimplexNoiseGenerator(seed);
+        this.biomeNoise = new SimplexNoiseGenerator(seed / 2);
 
         this.BASE_Y = baseY;
         this.Z_START = abyssStart;
@@ -36,10 +38,16 @@ public class SandGenerator {
 
     private static final int SAND_NOISE_AMPLITUDE = 2;
     private static final double SAND_NOISE_SCALE = 0.015;
+    private static final double BIOME_NOISE_SCALE = 0.002;
     private static final Material[] SAND_GROUND_MATERIALS = {
             Material.SAND,
             Material.SMOOTH_SANDSTONE,
             Material.SANDSTONE
+    };
+    private static final Material[] RED_SAND_GROUND_MATERIALS = {
+            Material.RED_SAND,
+            Material.SMOOTH_RED_SANDSTONE,
+            Material.RED_SANDSTONE
     };
 
     private static final int ROAD_FADE_DISTANCE = 140;
@@ -86,11 +94,11 @@ public class SandGenerator {
                         worldX * SAND_NOISE_SCALE,
                         0.5,
                         worldZ * SAND_NOISE_SCALE
-                ) + (double) SAND_NOISE_AMPLITUDE / 2) * getZNoiseBoost(worldZ);
+                ) + (double) SAND_NOISE_AMPLITUDE / 2) * getZNoiseBoost(worldZ, Z_START, (Z_START + ASCEND_LENGTH + HOLD_LENGTH + DESCEND_LENGTH));
 
-                if (Math.abs(noise) < 0.90) {
-                    noise = 0.0;
-                }
+//                if (Math.abs(noise) < 0.80) {
+//                    noise = 0.0;
+//                }
                 int zOffset = getZYOffset(worldZ);
                 int yNoise = getYNoise(worldX, noise, BASE_Y + zOffset);
 
@@ -100,7 +108,7 @@ public class SandGenerator {
                                 localX,
                                 y,
                                 localZ,
-                                randomMaterial(random, SAND_GROUND_MATERIALS)
+                                getSandMaterial(worldX, worldZ, biomeNoise, random)
                         );
                     } else {
                         if (random.nextDouble() <= (double) (UNDERGROUND_MATERIAL_START - y) / UNDERGROUND_LENGTH) {
@@ -126,6 +134,14 @@ public class SandGenerator {
 
 
     /* Helpers */
+    private Material getSandMaterial(int worldX, int worldZ, SimplexNoiseGenerator noise, Random random) {
+        if (random.nextDouble() >= noise.noise(worldX * BIOME_NOISE_SCALE, worldZ * BIOME_NOISE_SCALE)) {
+            return randomMaterial(random, SAND_GROUND_MATERIALS);
+        } else {
+            return randomMaterial(random, RED_SAND_GROUND_MATERIALS);
+        }
+    }
+
     private void generateBridgeSupportBlock(int chunkX, int chunkZ, Random random, ChunkGenerator.ChunkData chunkData) {
         int baseX = chunkX * 16;
         int baseZ = chunkZ * 16;
@@ -161,20 +177,18 @@ public class SandGenerator {
         return (int) Math.round(baseY + noise * SAND_NOISE_AMPLITUDE * factor);
     }
 
-    private static double getZNoiseBoost(int z) {
-        final int START = 1000;
-        final int END = 2000;
+    private static double getZNoiseBoost(int z, int zStart, int zEnd) {
         final int FADE = 350;
 
-        if (z < START || z > END) return 1.0;
+        if (z < zStart || z > zEnd) return 1.0;
 
-        if (z < START + FADE) {
-            double t = (z - START) / (double) FADE;
+        if (z < zStart + FADE) {
+            double t = (z - zStart) / (double) FADE;
             return 1.0 + smoothStep(t) * (SAND_NOISE_BOOST - 1.0);
         }
 
-        if (z > END - FADE) {
-            double t = (END - z) / (double) FADE;
+        if (z > zEnd - FADE) {
+            double t = (zEnd - z) / (double) FADE;
             return 1.0 + smoothStep(t) * (SAND_NOISE_BOOST - 1.0);
         }
 

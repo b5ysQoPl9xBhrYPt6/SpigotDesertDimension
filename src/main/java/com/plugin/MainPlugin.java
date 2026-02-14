@@ -58,7 +58,12 @@ public final class MainPlugin extends JavaPlugin {
                         DesertEnvironment.DESCEND_LENGTH
                                 + DesertEnvironment.HOLD_LENGTH
                                 + DesertEnvironment.ASCEND_LENGTH
-                )
+                ),
+                DesertEnvironment.BASE_Y,
+                DesertEnvironment.Z_START,
+                DesertEnvironment.ASCEND_LENGTH,
+                DesertEnvironment.HOLD_LENGTH,
+                DesertEnvironment.DESCEND_LENGTH
         );
         Bukkit.getPluginManager().registerEvents(generator, this);
 

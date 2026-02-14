@@ -36,7 +36,7 @@ public class PolesGenerator {
     private final int HIGH_POLE_DISTANCE;
 
 
-    public void generatePoles(ChunkLoadEvent e) {
+    public void eGeneratePoles(ChunkLoadEvent e) {
         if (!e.isNewChunk()) return;
 
         Chunk chunk = e.getChunk();

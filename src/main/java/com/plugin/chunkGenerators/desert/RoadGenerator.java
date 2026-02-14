@@ -36,9 +36,9 @@ public class RoadGenerator {
 
 
     /* Constants */
-    private static final double BRIDGE_ROAD_NOISE_SCALE = 0.050;
-    private static final double BRIDGE_ROAD_NOISE_SENSITIVITY = 0.4;
-    private static final double BRIDGE_ROAD_NOISE_BROKEN_SCALE = 0.060;
+    private static final double BRIDGE_ROAD_NOISE_SCALE = 0.065;
+    private static final double BRIDGE_ROAD_NOISE_SENSITIVITY = 0.5;
+    private static final double BRIDGE_ROAD_NOISE_BROKEN_SCALE = 0.080;
 
     private static final Material[] ROAD_MATERIALS = {
             Material.COAL_ORE,
@@ -69,6 +69,10 @@ public class RoadGenerator {
             Material.DEEPSLATE_BRICK_SLAB,
             Material.COBBLESTONE_SLAB
     };
+    private static final Material[] BRIDGE_SUPPORT_MATERIALS = {
+            Material.DEEPSLATE_TILES,
+            Material.CRACKED_DEEPSLATE_TILES
+    };
 
 
     public void generateRoad(int chunkX, int chunkZ, Random random, ChunkGenerator.ChunkData chunkData) {
@@ -81,29 +85,38 @@ public class RoadGenerator {
             for (int localZ = 0; localZ < 16; localZ++) {
                 int worldX = baseX + localX;
                 int worldZ = baseZ + localZ;
-                int absX = Math.abs(worldX);
 
-                if (getNoise(noise, worldX, worldZ) < BRIDGE_ROAD_NOISE_SENSITIVITY) {
-                    if (!(worldZ >= Z_START && worldZ <= (Z_START + DESCEND_LENGTH + HOLD_LENGTH + ASCEND_LENGTH))) {
-                        double roadBorderChance = getRoadBorderChance(absX);
+                boolean abyssPlace = (worldZ >= Z_START && worldZ <= Z_START + ASCEND_LENGTH + HOLD_LENGTH + DESCEND_LENGTH);
+
+                    if (!abyssPlace) {
+                        double roadBorderChance = getRoadBorderChance(Math.abs(worldX));
                         if (Math.abs(worldX) >= 5 && Math.abs(worldX) <= 5 + 3) {
-                            if (random.nextDouble() <= roadBorderChance){
+                            if (random.nextDouble() <= roadBorderChance) {
                                 chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, ROAD_BORDER_MATERIALS));
                             }
                         }
                     } else {
                         if (Math.abs(worldX) >= 5 && Math.abs(worldX) <= 5 + 2) {
-                            chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, BRIDGE_ROAD_BORDER_MATERIALS));
+                            if (getNoise(noise, worldX, worldZ) < BRIDGE_ROAD_NOISE_SENSITIVITY) {
+                                chunkData.setBlock(localX, BASE_Y, localZ, randomMaterial(random, BRIDGE_ROAD_BORDER_MATERIALS));
+                            }
                         }
                     }
 
-                    if (absX <= 5) {
-                        chunkData.setBlock(localX, BASE_Y, localZ, getRoadMaterialFromNoise(noise, random, worldX, worldZ));
+                    if (Math.abs(worldX) <= 5) {
+                        Material material = getRoadMaterialFromNoise(noise, random, worldX, worldZ);
+                        chunkData.setBlock(localX, BASE_Y, localZ, material);
                     }
-                    if (!(worldZ >= Z_START && worldZ <= Z_START + ASCEND_LENGTH + HOLD_LENGTH + DESCEND_LENGTH)) {
+
+                    if (!abyssPlace) {
                         if (worldX == 0 && worldZ % 4 != 0) {
                             chunkData.setBlock(localX, BASE_Y, localZ, Material.YELLOW_TERRACOTTA);
                         }
+                    }
+
+                if (abyssPlace) {
+                    if (Math.abs(worldX) == 6) {
+                        chunkData.setBlock(localX, BASE_Y - 1, localZ, randomMaterial(random, BRIDGE_SUPPORT_MATERIALS));
                     }
                 }
             }
