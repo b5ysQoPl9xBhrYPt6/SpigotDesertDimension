@@ -1,6 +1,6 @@
-package com.plugin.chunkGenerators;
+package com.plugin.generators;
 
-import com.plugin.chunkGenerators.desert.*;
+import com.plugin.generators.desert.*;
 
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 public class DesertGenerator extends ChunkGenerator implements Listener {
-    private final SandGenerator sandGenerator;
+    private final GroundGenerator groundGenerator;
     private final RoadGenerator roadGenerator;
     private final DecorationsGenerator decorationsGenerator;
     private final PolesGenerator polesGenerator;
@@ -29,7 +29,7 @@ public class DesertGenerator extends ChunkGenerator implements Listener {
     private final int DESCEND_LENGTH;
 
     public DesertGenerator(
-            SandGenerator sandGenerator,
+            GroundGenerator groundGenerator,
             RoadGenerator roadGenerator,
             DecorationsGenerator decorationsGenerator,
             PolesGenerator polesGenerator,
@@ -41,7 +41,7 @@ public class DesertGenerator extends ChunkGenerator implements Listener {
             int holdLength,
             int descendLength
     ) {
-        this.sandGenerator = sandGenerator;
+        this.groundGenerator = groundGenerator;
         this.roadGenerator = roadGenerator;
         this.decorationsGenerator = decorationsGenerator;
         this.polesGenerator = polesGenerator;
@@ -70,7 +70,7 @@ public class DesertGenerator extends ChunkGenerator implements Listener {
             int chunkX, int chunkZ,
             @NonNull ChunkData chunkData
     ) {
-        sandGenerator.generateSand(chunkX, chunkZ, random, chunkData);
+        groundGenerator.generateSand(chunkX, chunkZ, random, chunkData);
         roadGenerator.generateRoad(chunkX, chunkZ, random, chunkData);
         decorationsGenerator.generateDecorations(chunkX, chunkZ, random, chunkData);
     }

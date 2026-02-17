@@ -1,8 +1,7 @@
-package com.plugin.chunkGenerators.desert;
+package com.plugin.generators.desert;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.block.structure.Mirror;
 import org.bukkit.block.structure.StructureRotation;
 import org.bukkit.event.world.ChunkLoadEvent;

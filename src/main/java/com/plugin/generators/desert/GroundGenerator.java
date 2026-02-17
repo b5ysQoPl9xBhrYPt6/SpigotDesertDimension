@@ -1,4 +1,4 @@
-package com.plugin.chunkGenerators.desert;
+package com.plugin.generators.desert;
 
 import org.bukkit.Material;
 import org.bukkit.generator.ChunkGenerator;
@@ -6,11 +6,11 @@ import org.bukkit.util.noise.SimplexNoiseGenerator;
 
 import java.util.Random;
 
-public class SandGenerator {
+public class GroundGenerator {
     private final SimplexNoiseGenerator sandNoise;
     private final SimplexNoiseGenerator biomeNoise;
 
-    public SandGenerator(
+    public GroundGenerator(
             long seed,
             int baseY,
             int abyssStart,
@@ -38,7 +38,7 @@ public class SandGenerator {
 
     private static final int SAND_NOISE_AMPLITUDE = 2;
     private static final double SAND_NOISE_SCALE = 0.015;
-    private static final double BIOME_NOISE_SCALE = 0.002;
+    private static final double BIOME_NOISE_SCALE = 0.0008;
     private static final Material[] SAND_GROUND_MATERIALS = {
             Material.SAND,
             Material.SMOOTH_SANDSTONE,
@@ -92,13 +92,9 @@ public class SandGenerator {
 
                 double noise = (sandNoise.noise(
                         worldX * SAND_NOISE_SCALE,
-                        0.5,
                         worldZ * SAND_NOISE_SCALE
                 ) + (double) SAND_NOISE_AMPLITUDE / 2) * getZNoiseBoost(worldZ, Z_START, (Z_START + ASCEND_LENGTH + HOLD_LENGTH + DESCEND_LENGTH));
 
-//                if (Math.abs(noise) < 0.80) {
-//                    noise = 0.0;
-//                }
                 int zOffset = getZYOffset(worldZ);
                 int yNoise = getYNoise(worldX, noise, BASE_Y + zOffset);
 

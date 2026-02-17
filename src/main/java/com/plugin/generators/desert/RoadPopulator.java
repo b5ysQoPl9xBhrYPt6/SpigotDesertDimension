@@ -1,6 +1,5 @@
-package com.plugin.chunkGenerators.desert;
+package com.plugin.generators.desert;
 
-import com.plugin.chunkGenerators.DesertGenerator;
 import com.plugin.environment.DesertEnvironment;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
